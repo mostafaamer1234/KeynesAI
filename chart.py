@@ -7,11 +7,11 @@ from sklearn.ensemble import RandomForestClassifier
 def download_data(ticker):
     filename = f"{ticker}.csv"
     if os.path.exists(filename):
-        df = pd.read_csv(filename, index_col=0)
+        df = pd.read_csv(filename, index_col=0, parse_dates=True)
     else:
         df = yf.Ticker(ticker).history(period="max")
         df.to_csv(filename)
-    df.index = pd.to_datetime(df.index)
+    df.index = pd.to_datetime(df.index, utc=True)
     df.drop(["Dividends", "Stock Splits"], axis=1, inplace=True, errors='ignore')
     return df
 
@@ -20,8 +20,7 @@ def add_pattern_features(df):
     df["SMA_50"] = df["Close"].rolling(50).mean()
     df["Volatility"] = df["Close"].rolling(20).std()
     df["Momentum"] = df["Close"] - df["Close"].shift(10)
-    df = df.dropna()
-    return df
+    return df.dropna()
 
 def label_patterns(df):
     df["Future_Close"] = df["Close"].shift(-5)
@@ -41,9 +40,9 @@ def train_pattern_model(ticker):
     model = RandomForestClassifier(n_estimators=100, random_state=42)
     model.fit(X, y)
     joblib.dump(model, f"{ticker}_pattern_model.pkl")
-    print(f"Model saved as {ticker}_pattern_model.pkl")
+    print(f"Pattern model saved as {ticker}_pattern_model.pkl")
 
-# Train for key tickers
-tickers = ["^GSPC", "AAPL", "MSFT", "IBM"]
-for ticker in tickers:
-    train_pattern_model(ticker)
+if __name__ == "__main__":
+    tickers = ["^GSPC", "AAPL", "MSFT", "IBM"]
+    for ticker in tickers:
+        train_pattern_model(ticker)
