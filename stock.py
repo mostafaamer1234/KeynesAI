@@ -203,7 +203,7 @@ def predict_future(df, model, predictors, ticker, periods=252):
 
 
 def run_for_stock(ticker):
-    print(f"Processing {ticker}...")
+    print(f"\nProcessing {ticker}...")
     df = download_data(ticker)
     df = add_features(df)
     df = add_pattern_features(df)
@@ -230,7 +230,7 @@ def run_for_stock(ticker):
             print(f"Saved 252-day predictions for {ticker} to {ticker}_future_predictions.csv")
 
             # Print summary
-            print(f"\n{ticker} 252-Day Prediction Summary:")
+            print(f"{ticker} 252-Day Prediction Summary:")
             print(f"Starting Price: {df['Close'].iloc[-1]:.2f}")
             print(f"Predicted Final Price: {future_predictions['Predicted_Close'].iloc[-1]:.2f}")
             change_pct = (future_predictions['Predicted_Close'].iloc[-1] / df['Close'].iloc[-1] - 1) * 100
@@ -260,3 +260,4 @@ if __name__ == "__main__":
         results = {}
         for ticker in tickers:
             results[ticker] = run_for_stock(ticker)
+3
