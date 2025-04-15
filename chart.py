@@ -28,7 +28,7 @@ def label_patterns(df):
     return df.dropna()
 
 def train_pattern_model(ticker):
-    print(f"Training pattern model for {ticker}...")
+    print(f"Training pattern model for {ticker}....")
     df = download_data(ticker)
     df = add_pattern_features(df)
     df = label_patterns(df)
