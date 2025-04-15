@@ -1,9 +1,10 @@
 import pandas as pd
 import joblib
 import os
+import numpy as np
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import precision_score
-from boomCrash import BoomCrashModel  # Import the class from its module
+from boomCrash import BoomCrashModel
 
 
 def download_data(ticker):
@@ -57,7 +58,6 @@ def backtest(df, model, predictors, ticker, start=2500, step=250):
 
     try:
         pattern_model = joblib.load(f"{ticker}_pattern_model.pkl")
-        # No need to import BoomCrashModel here since we imported it at the top
         boom_crash_model = joblib.load("boom_crash_model.pkl")
     except FileNotFoundError as e:
         print(f"Model file not found: {e}")
@@ -69,33 +69,137 @@ def backtest(df, model, predictors, ticker, start=2500, step=250):
         train = df.iloc[0:i].copy()
         test = df.iloc[i:(i + step)].copy()
 
-        # Get predictions from both models
         pattern_probs = pattern_model.predict_proba(test[pattern_features])[:, 1]
         thresholds = []
 
         for date, p in zip(test.index, pattern_probs):
             phase = boom_crash_model.get_market_phase(date)
-
-            # Base threshold
             threshold = 0.6
 
-            # Adjust based on pattern confidence
             if p < 0.4:
                 threshold += 0.1
             elif p > 0.6:
                 threshold -= 0.1
 
-            # Adjust based on market phase
             if phase == "boom":
                 threshold -= 0.05
             elif phase == "crash":
                 threshold += 0.05
 
-            thresholds.append(max(0.35, min(0.65, threshold)))  # Keep within bounds
+            thresholds.append(max(0.35, min(0.65, threshold)))
 
         predictions = predict(train, test, predictors, model, thresholds)
         all_predictions.append(predictions)
     return pd.concat(all_predictions)
+
+
+def generate_future_dates(last_date, periods=252):
+    """Generate future trading dates"""
+    from pandas.tseries.offsets import BDay
+    return pd.date_range(start=last_date + BDay(1), periods=periods, freq='B')
+
+
+def predict_future(df, model, predictors, ticker, periods=252):
+    """Predict the next 252 trading days"""
+    try:
+        pattern_model = joblib.load(f"{ticker}_pattern_model.pkl")
+        boom_crash_model = joblib.load("boom_crash_model.pkl")
+    except FileNotFoundError as e:
+        print(f"Model file not found: {e}")
+        return None
+
+    # Generate future dates
+    last_date = df.index[-1]
+    future_dates = generate_future_dates(last_date, periods)
+
+    # Create future dataframe
+    future_df = pd.DataFrame(index=future_dates)
+
+    # Initialize with last known values
+    last_row = df.iloc[-1].copy()
+
+    predictions = []
+    price_path = [last_row['Close']]
+
+    for i, date in enumerate(future_dates):
+        # Create a new row based on previous values
+        new_row = last_row.copy()
+        new_row.name = date
+
+        # Update features that depend on previous prices
+        new_row['Close'] = price_path[-1]  # Start with last price
+
+        # Calculate pattern features
+        if i >= 50:  # Need enough history for SMA_50
+            window = price_path[-50:]
+            new_row['SMA_20'] = np.mean(price_path[-20:])
+            new_row['SMA_50'] = np.mean(window)
+            new_row['Volatility'] = np.std(price_path[-20:])
+            new_row['Momentum'] = price_path[-1] - price_path[-11]
+        else:
+            # For early days without enough history, use approximations
+            new_row['SMA_20'] = np.mean(price_path[-min(20, len(price_path)):])
+            new_row['SMA_50'] = np.mean(price_path)
+            new_row['Volatility'] = np.std(price_path)
+            new_row['Momentum'] = price_path[-1] - price_path[0] if len(price_path) > 10 else 0
+
+        # Calculate horizon features
+        for horizon in [2, 5, 60, 250, 1000]:
+            if i >= horizon:
+                rolling_avg = np.mean(price_path[-horizon:])
+                new_row[f"Close_Ratio_{horizon}"] = price_path[-1] / rolling_avg
+                # For trend, we'd need the actual target history which we don't have
+                # So we'll use a simplified version
+                new_row[f"Trend_{horizon}"] = np.sum(predictions[-horizon:]) if len(predictions) >= horizon else 0.5
+            else:
+                new_row[f"Close_Ratio_{horizon}"] = 1.0
+                new_row[f"Trend_{horizon}"] = 0.5
+
+        # Get pattern probability
+        pattern_features = ["SMA_20", "SMA_50", "Volatility", "Momentum"]
+        if i >= 50:  # Need enough history for pattern recognition
+            pattern_probs = pattern_model.predict_proba(pd.DataFrame([new_row[pattern_features]]))[:, 1][0]
+        else:
+            pattern_probs = 0.5
+
+        # Determine threshold
+        phase = boom_crash_model.get_market_phase(date)
+        threshold = 0.6
+
+        if pattern_probs < 0.4:
+            threshold += 0.1
+        elif pattern_probs > 0.6:
+            threshold -= 0.1
+
+        if phase == "boom":
+            threshold -= 0.05
+        elif phase == "crash":
+            threshold += 0.05
+
+        threshold = max(0.35, min(0.65, threshold))
+
+        # Make prediction
+        prob = model.predict_proba(pd.DataFrame([new_row[predictors]]))[:, 1][0]
+        prediction = 1 if prob >= threshold else 0
+        predictions.append(prediction)
+
+        # Update price based on prediction (simplified model)
+        change = 0.005 if prediction == 1 else -0.003  # 0.5% up or 0.3% down
+        new_price = price_path[-1] * (1 + change)
+        price_path.append(new_price)
+
+        # Update last_row for next iteration
+        last_row = new_row.copy()
+        last_row['Close'] = new_price
+
+    # Create result dataframe
+    result = pd.DataFrame({
+        'Date': future_dates,
+        'Predicted_Close': price_path[1:],  # Skip the initial price
+        'Predicted_Direction': predictions
+    }).set_index('Date')
+
+    return result
 
 
 def run_for_stock(ticker):
@@ -112,16 +216,34 @@ def run_for_stock(ticker):
     model = RandomForestClassifier(n_estimators=150, min_samples_split=50, random_state=1)
     df = df.dropna()
 
+    # Backtest for validation
     predictions = backtest(df, model, predictors, ticker)
     if predictions is not None:
         precision = precision_score(predictions["Target"], predictions["Predictions"])
-        print(f"{ticker} Precision: {precision:.4f}")
-        return predictions
+        print(f"{ticker} Backtest Precision: {precision:.4f}")
+
+        # Generate future predictions
+        future_predictions = predict_future(df, model, predictors, ticker)
+        if future_predictions is not None:
+            # Save predictions to CSV
+            future_predictions.to_csv(f"{ticker}_future_predictions.csv")
+            print(f"Saved 252-day predictions for {ticker} to {ticker}_future_predictions.csv")
+
+            # Print summary
+            print(f"\n{ticker} 252-Day Prediction Summary:")
+            print(f"Starting Price: {df['Close'].iloc[-1]:.2f}")
+            print(f"Predicted Final Price: {future_predictions['Predicted_Close'].iloc[-1]:.2f}")
+            change_pct = (future_predictions['Predicted_Close'].iloc[-1] / df['Close'].iloc[-1] - 1) * 100
+            print(f"Predicted Change: {change_pct:.2f}%")
+            up_days = future_predictions['Predicted_Direction'].sum()
+            print(
+                f"Predicted Up Days: {up_days}/{len(future_predictions)} ({up_days / len(future_predictions) * 100:.1f}%)")
+
+            return future_predictions
     return None
 
 
 if __name__ == "__main__":
-    # Check if model files exist in the current directory
     required_files = ["boom_crash_model.pkl"]
     tickers = ["^GSPC", "AAPL", "MSFT", "IBM"]
     required_files.extend([f"{ticker}_pattern_model.pkl" for ticker in tickers])

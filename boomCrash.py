@@ -5,8 +5,8 @@ from sklearn.ensemble import RandomForestClassifier
 
 class BoomCrashModel:
     def __init__(self):
-        self.boom_years = [1927, 1945, 1965, 1981, 1999, 2019, 2035, 2053]
-        self.crash_years = [1929, 1937, 1947, 1969, 1987, 2001, 2008, 2020, 2037, 2055]
+        self.boom_years = [1927, 1935, 1945, 1953, 1965, 1972, 1981, 1989, 1999, 2007, 2019, 2026, 2035, 2043, 2053]
+        self.crash_years = [1929, 1931, 1942, 1951, 1958, 1969, 1978, 1985, 1996, 2006, 2012, 2023, 2032, 2039, 2050]
 
         current_year = pd.Timestamp.now().year
         for year in range(1927, current_year + 50, 18):
