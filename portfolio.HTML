@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Portfolio - Keynes AI</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header class="navbar">
+    <a href="index.html" class="logo">Keynes AI</a>
+    <nav class="nav-links">
+        <a href="about_us.html">About</a>
+        <a href="portfolio.html">Portfolio</a>
+        <a href="predictions.html">Predictions</a>
+        <a href="trending_stocks.html">Trending Stocks</a>
+      </nav>
+    <div class="auth-buttons">
+      <button class="btn lime">Sign Up!</button>
+      <button class="btn lime">Log In!</button>
+    </div>
+  </header>
+
+  <main class="portfolio-main">
+    <h1>Portfolio Overview</h1>
+
+    <div class="portfolio-overview">
+      <div class="overview-box">Total Portfolio Value</div>
+      <div class="overview-box">Today’s Gain/Loss</div>
+      <div class="overview-box">Top Performing Stock</div>
+    </div>
+
+    <h2>Stock Holdings</h2>
+
+    <table class="stock-table">
+      <thead>
+        <tr>
+          <th>Stock Name</th>
+          <th>Shares Owned</th>
+          <th>Buy Price</th>
+          <th>Current Price</th>
+          <th>Change %</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>APPL</td>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td></td>
+        </tr>
+        <tr>
+          <td>IBM</td>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td></td>
+        </tr>
+        <tr>
+          <td>S&amp;P500</td>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td></td>
+        </tr>
+        <tr>
+          <td>AMZN</td>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td></td>
+        </tr>
+      </tbody>
+    </table>
+
+    <script>
+      const links = document.querySelectorAll("a[href$='.html']");
+      links.forEach(link => {
+        link.addEventListener("click", function (e) {
+          e.preventDefault();
+          const href = this.getAttribute("href");
+          document.body.style.opacity = 0;
+          setTimeout(() => {
+            window.location.href = href;
+          }, 300);
+        });
+      });
+    
+      window.onload = () => {
+        document.body.style.opacity = 1;
+      };
+    </script>
+
+  </main>
+</body>
+</html>

@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>About the Devs | Keynes AI</title>
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    .dev-nav {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      margin-top: 40px;
+    }
+    .dev-nav a {
+      background-color: #ccff00;
+      padding: 10px 20px;
+      text-decoration: none;
+      color: black;
+      font-weight: bold;
+      border-radius: 4px;
+    }
+    .dev-nav a:hover {
+      background-color: #bfff77;
+    }
+    .intro-section {
+      text-align: center;
+      max-width: 900px;
+      margin: 40px auto;
+    }
+    .intro-section img {
+      max-width: 300px;
+      border-radius: 6px;
+      margin: 20px 0;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ✅ Navigation Bar with Buttons -->
+  <header class="navbar">
+    <a href="index.html" class="logo">Keynes AI</a>
+    <nav class="nav-links">
+      <a href="about_us.html">About</a>
+      <a href="portfolio.html">Portfolio</a>
+      <a href="predictions.html">Predictions</a>
+      <a href="trending_stocks.html">Trending Stocks</a>
+    </nav>
+    <div class="auth-buttons">
+      <button class="btn lime" onclick="showSignup()">Sign Up!</button>
+      <button class="btn lime" onclick="showLogin()">Log In!</button>
+    </div>
+  </header>
+
+  <main class="intro-section">
+    <h1 style="color: #ccff00;">About the Devs</h1>
+    <img src="https://upload.wikimedia.org/wikipedia/commons/5/5e/John_Maynard_Keynes_1933.jpg" alt="John Maynard Keynes">
+    <p>
+      Keynes AI is inspired by the ideas of John Maynard Keynes, one of the most influential economists of the 20th century.
+      Known for his insights into market psychology and economic behavior, Keynes believed that emotions and human behavior
+      often drive markets more than logic. Our goal with Keynes AI is to bring clarity to that chaos by using modern
+      artificial intelligence to analyze market data, trends, and sentiment. By doing so, the platform helps investors make
+      smarter decisions, reduce guesswork, and stay ahead of market shifts with reliable, data-driven insights.
+    </p>
+    <p style="margin-top: 30px; font-weight: bold; font-size: 18px;">Click on any name to get to know us better!</p>
+
+    <div class="dev-nav">
+      <a href="wilson.html">Wilson Quilli</a>
+      <a href="mostafa.html">Mostafa Amer</a>
+      <a href="sam.html">Sam Shtrambrand</a>
+      <a href="nick.html">Nick Shvelidze</a>
+    </div>
+  </main>
+
+  <!-- ✅ Modals -->
+  <div id="loginModal" class="modal">
+    <div class="modal-content">
+      <h2>Login</h2>
+      <label>Email:</label>
+      <input type="email" placeholder="Enter Email" />
+      <label>Password:</label>
+      <input type="password" placeholder="Enter Password" />
+      <p>Don’t have an account? Click <a href="#" onclick="switchToSignup()">here</a> to sign up now!</p>
+      <button onclick="alert('Logged in!')">Login</button>
+    </div>
+  </div>
+
+  <div id="signupModal" class="modal">
+    <div class="modal-content">
+      <h2>Signup</h2>
+      <label>Email:</label>
+      <input type="email" placeholder="Enter Email" />
+      <label>Confirm Email:</label>
+      <input type="email" placeholder="Re-enter Email" />
+      <label>Create Password:</label>
+      <input type="password" placeholder="Enter Password" />
+      <label>Confirm Password:</label>
+      <input type="password" placeholder="Re-enter Password" />
+      <button onclick="alert('Account created!')">Create Account</button>
+      <p>Already have an account? Click <a href="#" onclick="switchToLogin()">here</a> to sign in!</p>
+    </div>
+  </div>
+
+  <script>
+    const loginModal = document.getElementById("loginModal");
+    const signupModal = document.getElementById("signupModal");
+
+    function showLogin() {
+      loginModal.style.display = "flex";
+      signupModal.style.display = "none";
+    }
+
+    function showSignup() {
+      signupModal.style.display = "flex";
+      loginModal.style.display = "none";
+    }
+
+    function switchToSignup() {
+      showSignup();
+    }
+
+    function switchToLogin() {
+      showLogin();
+    }
+
+    window.onclick = function(event) {
+      if (event.target === loginModal) loginModal.style.display = "none";
+      if (event.target === signupModal) signupModal.style.display = "none";
+    };
+    
+    const links = document.querySelectorAll("a[href$='.html']");
+  links.forEach(link => {
+    link.addEventListener("click", function (e) {
+      e.preventDefault();
+      const href = this.getAttribute("href");
+      document.body.style.opacity = 0;
+      setTimeout(() => {
+        window.location.href = href;
+      }, 300);
+    });
+  });
+
+  window.onload = () => {
+    document.body.style.opacity = 1;
+  };
+
+  </script>
+
+</body>
+</html>
