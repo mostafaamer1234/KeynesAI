@@ -4,8 +4,15 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>About the Devs | Keynes AI</title>
-  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="{{ url_for('style') }}" />
   <style>
+    body {
+      transition: opacity 0.3s ease-in-out;
+      opacity: 0;
+      background: url("{{ url_for('static', filename='asbg.jpg') }}") no-repeat center center fixed;
+      background-size: cover;
+    }
+
     .dev-nav {
       display: flex;
       justify-content: center;
@@ -38,12 +45,12 @@
 <body>
 
   <header class="navbar">
-    <a href="index.html" class="logo">Keynes AI</a>
+    <a href="{{ url_for('home') }}" class="logo">Keynes AI</a>
     <nav class="nav-links">
-      <a href="about_us.html">About</a>
-      <a href="portfolio.html">Portfolio</a>
-      <a href="predictions.html">Predictions</a>
-      <a href="trending_stocks.html">Trending Stocks</a>
+      <a href="{{ url_for('about') }}">About</a>
+      <a href="{{ url_for('portfolio') }}">Portfolio</a>
+      <a href="{{ url_for('predictions') }}">Predictions</a>
+      <a href="{{ url_for('trending_stocks') }}">Trending Stocks</a>
     </nav>
     <div class="auth-buttons">
       <button class="btn lime" onclick="showSignup()">Sign Up!</button>
@@ -53,7 +60,7 @@
 
   <main class="intro-section">
     <h1 style="color: #ccff00;">About the Devs</h1>
-    <img src="https://upload.wikimedia.org/wikipedia/commons/5/5e/John_Maynard_Keynes_1933.jpg" alt="John Maynard Keynes">
+    <img src="static/keynes_.png" alt="John Maynard Keynes">
     <p>
       Keynes AI is inspired by the ideas of John Maynard Keynes, one of the most influential economists of the 20th century.
       Known for his insights into market psychology and economic behavior, Keynes believed that emotions and human behavior
@@ -64,10 +71,10 @@
     <p style="margin-top: 30px; font-weight: bold; font-size: 18px;">Click on any name to get to know us better!</p>
 
     <div class="dev-nav">
-      <a href="wilson.html">Wilson Quilli</a>
-      <a href="mostafa.html">Mostafa Amer</a>
-      <a href="sam.html">Sam Shtrambrand</a>
-      <a href="nick.html">Nick Shvelidze</a>
+      <a href="{{ url_for('wilson') }}">Wilson Quilli</a>
+      <a href="{{ url_for('mostafa') }}">Mostafa Amer</a>
+      <a href="{{ url_for('sam') }}">Sam Shtrambrand</a>
+      <a href="{{ url_for('nick') }}">Nick Shvelidze</a>
     </div>
   </main>
 
@@ -125,23 +132,22 @@
       if (event.target === loginModal) loginModal.style.display = "none";
       if (event.target === signupModal) signupModal.style.display = "none";
     };
-    
+
     const links = document.querySelectorAll("a[href$='.html']");
-  links.forEach(link => {
-    link.addEventListener("click", function (e) {
-      e.preventDefault();
-      const href = this.getAttribute("href");
-      document.body.style.opacity = 0;
-      setTimeout(() => {
-        window.location.href = href;
-      }, 300);
+    links.forEach(link => {
+      link.addEventListener("click", function (e) {
+        e.preventDefault();
+        const href = this.getAttribute("href");
+        document.body.style.opacity = 0;
+        setTimeout(() => {
+          window.location.href = href;
+        }, 300);
+      });
     });
-  });
 
-  window.onload = () => {
-    document.body.style.opacity = 1;
-  };
-
+    window.onload = () => {
+      document.body.style.opacity = 1;
+    };
   </script>
 
 </body>
