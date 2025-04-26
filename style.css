@@ -232,8 +232,6 @@ body {
   
   .predictions-main {
     padding: 60px 40px;
-    background: url('https://www.transparenttextures.com/patterns/stardust.png'), black;
-    background-size: cover;
     color: white;
     text-align: center;
   }
