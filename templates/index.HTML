@@ -93,17 +93,46 @@
       </div>
 
       <div id="loginModal" class="modal">
-        <div class="modal-content">
-          <h2>Login</h2>
-          <label>Email:</label>
-          <input type="email" placeholder="Enter Email" />
-          <label>Password:</label>
-          <input type="password" placeholder="Enter Password" />
-          <p>
-            Don't have an account? Click
-            <a href="#" onclick="switchToSignup()">here</a> to sign up now!
+        <div class="modal-content login-modal-modern">
+          <button class="close-modal" onclick="loginModal.style.display='none'">
+            &times;
+          </button>
+          <h2><i class="fa-solid fa-right-to-bracket"></i> Login</h2>
+          {% with messages = get_flashed_messages(with_categories=true) %} {% if
+          messages %} {% for category, message in messages %}
+          <div class="alert alert-{{ category }}">{{ message }}</div>
+          {% endfor %} {% endif %} {% endwith %}
+          <form method="POST" action="{{ url_for('login') }}">
+            <div class="form-group">
+              <label for="login-email"
+                ><i class="fa-solid fa-envelope"></i> Email:</label
+              >
+              <input
+                type="email"
+                id="login-email"
+                name="email"
+                placeholder="Enter Email"
+                required
+              />
+            </div>
+            <div class="form-group">
+              <label for="login-password"
+                ><i class="fa-solid fa-lock"></i> Password:</label
+              >
+              <input
+                type="password"
+                id="login-password"
+                name="password"
+                placeholder="Enter Password"
+                required
+              />
+            </div>
+            <button type="submit" class="btn login-btn">Log In</button>
+          </form>
+          <p style="margin-top: 18px; text-align: center">
+            Don't have an account?
+            <a href="#" onclick="switchToSignup()">Sign up here</a>
           </p>
-          <button onclick="alert('Logged in!')">Login</button>
         </div>
       </div>
 
