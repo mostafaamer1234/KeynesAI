@@ -23,6 +23,15 @@
       <a href="{{ url_for('sectors') }}">Sectors</a>
     </nav>
     <div class="auth-buttons">
+      {% if session.get('user_id') %}
+      <form
+        action="{{ url_for('logout') }}"
+        method="post"
+        style="display: inline"
+      >
+        <button class="btn lime" type="submit">Sign Out</button>
+      </form>
+      {% else %}
       <button
         class="btn lime"
         onclick="window.location.href='{{ url_for('register') }}'"
@@ -35,6 +44,7 @@
       >
         Log In!
       </button>
+      {% endif %}
     </div>
   </header>
   <body>

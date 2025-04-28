@@ -110,6 +110,7 @@ def register():
     return render_template('register.html')
 
 @app.route('/logout')
+@app.route('/logout', methods=['POST'])
 def logout():
     session.pop('user_id', None)
     flash('You have been logged out', 'info')
