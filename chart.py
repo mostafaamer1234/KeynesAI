@@ -4,10 +4,14 @@ import os
 import joblib
 from sklearn.ensemble import RandomForestClassifier
 
+
 def download_data(ticker):
     filename = f"{ticker}.csv"
     if os.path.exists(filename):
         df = pd.read_csv(filename, index_col=0, parse_dates=True)
+
+        df = pd.read_csv(filename, index_col=0) 
+
     else:
         df = yf.Ticker(ticker).history(period="max")
         df.to_csv(filename)

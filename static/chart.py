@@ -3,7 +3,11 @@ import pandas as pd
 import os
 import joblib
 from sklearn.ensemble import RandomForestClassifier
-
+<<<<<<< HEAD
+# your version
+=======
+# incoming version
+>>>>>>> main
 def download_data(ticker):
     filename = f"{ticker}.csv"
     if os.path.exists(filename):

@@ -22,7 +22,7 @@ def download_data(ticker):
 
 def add_features(df):
     df["Tomorrow"] = df["Close"].shift(-1)
-    df["Target"] = (df["Tomorrow"] > df["Close"]).astype(int)
+    df["Target"] = (df["Tomorrow"] > df["Close"]).astype(int)§  §
     df = df.loc["1990-01-01":].copy()
     return df
 
