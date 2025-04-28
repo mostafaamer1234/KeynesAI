@@ -1,0 +1,36 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Virtual environment
+.venv/
+venv/
+ENV/
+
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints
+
+# Environment variables
+.env
+.env.*
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Model and data files
+*.pkl
+*.csv
+*.h5
+*.db
+
+# VSCode
+.vscode/
+
+# Logs
+*.log
+
+# Ignore secrets
+secrets.json 
