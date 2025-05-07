@@ -60,10 +60,17 @@
       <a href="{{ url_for('portfolio') }}">Portfolio</a>
       <a href="{{ url_for('predictions') }}">Predictions</a>
       <a href="{{ url_for('trending_stocks') }}">Trending Stocks</a>
+      <a href="{{ url_for('sectors') }}">Sectors</a>
     </nav>
     <div class="auth-buttons">
-      <button class="btn lime" onclick="showSignup()">Sign Up!</button>
-      <button class="btn lime" onclick="showLogin()">Log In!</button>
+      {% if session.get('user_id') %}
+        <form action="{{ url_for('logout') }}" method="post" style="display:inline;">
+          <button class="btn lime" type="submit">Sign Out</button>
+        </form>
+      {% else %}
+        <button class="btn lime" onclick="showSignup()">Sign Up!</button>
+        <button class="btn lime" onclick="showLogin()">Log In!</button>
+      {% endif %}
     </div>    
   </header>
 
@@ -89,7 +96,7 @@
         <input type="email" placeholder="Enter Email">
         <label>Password:</label>
         <input type="password" placeholder="Enter Password">
-        <p>Don’t have an account? Click <a href="#" onclick="switchToSignup()">here</a> to sign up now!</p>
+        <p>Don't have an account? Click <a href="#" onclick="switchToSignup()">here</a> to sign up now!</p>
         <button onclick="alert('Logged in!')">Login</button>
       </div>
     </div>
