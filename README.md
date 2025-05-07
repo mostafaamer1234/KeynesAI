@@ -1,6 +1,6 @@
 # KeynesAI - Stock Market Analysis Platform
 
-KeynesAI is a Stock predictor that uses Machine learning models for predicting stocks with a 65% accuracy, it is sophisticated web-based platform for stock market analysis, predictions, and portfolio management. Built with Flask and powered by machine learning algorithms, it provides users with tools to analyze stocks, make predictions, and track their investment portfolio.
+KeynesAI is a Stock predictor that uses a Machine learning model for predicting stocks with a 65% accuracy, it is sophisticated web-based platform for stock market analysis, predictions, and portfolio management. Built with Flask and powered by machine learning algorithms, it provides users with tools to analyze stocks, make predictions, and track their investment portfolio.
 
 ## Features
 
@@ -32,6 +32,7 @@ KeynesAI is a Stock predictor that uses Machine learning models for predicting s
   - Category-based filtering
 
 - **Prediction Engine**
+  - Retrieved data from YFinance to train the model
   - Machine learning-based price predictions
   - Multiple time horizon predictions
   - Technical pattern analysis
@@ -103,10 +104,9 @@ KeynesAI/
 ```
 
 ## Contributers
-1. Mostafa Amer - Created the Machine learning model, created the sectors page built using tree datastructures for sorting through available stocks, and created the database for user signin/ signup and created the UI Pages for them
+1. Mostafa Amer - Created the Machine learning model, Retrieved data from YFinance to train the model, created the sectors page built using tree datastructures for sorting through available stocks, and created the database for user signin/ signup and created the UI Pages for them
 2. Nick - Hard codded the boom&crash and chart.py to add as training variables for the machine learning model which increased accuracy up to 65% accuracy.
 3. Wilson & sam - Built the UI front-end, and wilson helped Mostafa integrate the machine learning model (back-end) to the front-end.
-
 
 ## License
 
