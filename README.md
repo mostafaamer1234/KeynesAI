@@ -104,7 +104,7 @@ KeynesAI/
 ```
 
 ## Contributers
-1. Mostafa Amer - Created the Machine learning model, Retrieved data from YFinance to train the model, created the sectors page built using tree datastructures for sorting through available stocks, and created the database for user signin/ signup and created the UI Pages for them
+1. Mostafa Amer - Created the Machine learning model, Retrieved data from YFinance to train the model, created the sectors page built using tree datastructures for sorting through available stocks, and created the database for user signin/ signup using MYSQL in XAMPP, and created the UI Pages for them
 2. Nick - Hard codded the boom&crash and chart.py to add as training variables for the machine learning model which increased accuracy up to 65% accuracy.
 3. Wilson & sam - Built the UI front-end, and wilson helped Mostafa integrate the machine learning model (back-end) to the front-end.
 
@@ -115,3 +115,5 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 ## Contact
 
 For any queries or support, please open contact us at amermostafa.official477@gmail.com
+
+This README file was written by: Mostafa Amer
