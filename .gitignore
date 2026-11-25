@@ -37,3 +37,4 @@ secrets.json
 __pycache__/
 .venv/
 .pytest_cache/
+.vercel

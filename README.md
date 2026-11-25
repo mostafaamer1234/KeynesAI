@@ -1,6 +1,9 @@
 # KeynesAI - Stock Market Analysis Platform
 
-KeynesAI is a Stock predictor that uses a machine learning model to predict next-day stock direction (see the leakage-free evaluation below for real out-of-sample numbers). It is a web-based platform for stock market analysis, predictions, and portfolio management. Built with Flask and powered by machine learning algorithms, it provides users with tools to analyze stocks, make predictions, and track their investment portfolio.
+KeynesAI is a Stock predictor that uses a machine learning model to predict next-day stock direction (see the leakage-free evaluation below for real out-of-sample numbers).
+
+**Results page: [keynesai.vercel.app](https://keynesai.vercel.app)**. Interactive equity curves from the leakage-free walk-forward evaluation, model versus buy and hold, for each ticker. The page lives in `site/` and its data comes from `python -m evaluation.export_site_data`.
+ It is a web-based platform for stock market analysis, predictions, and portfolio management. Built with Flask and powered by machine learning algorithms, it provides users with tools to analyze stocks, make predictions, and track their investment portfolio.
 
 ## Features
 
@@ -130,10 +133,10 @@ The original backtest scored each test window with `*_pattern_model.pkl` models.
 
 | Ticker | Test days (2000–2025) | Accuracy | Always-up baseline | Precision of "up" calls | Strategy CAGR / Sharpe / MaxDD | Buy & hold CAGR / Sharpe / MaxDD |
 |---|---|---|---|---|---|---|
-| S&P 500 (^GSPC) | 6,353 | 51.8% | 53.6% | 53.8% | -1.2% / 0.01 / -68% | 5.1% / 0.35 / -57% |
-| AAPL | 6,354 | 51.4% | 52.2% | 53.3% | 16.9% / 0.73 / -56% | 23.6% / 0.75 / -82% |
-| MSFT | 6,354 | 51.5% | 51.0% | 52.2% | 9.4% / 0.50 / -55% | 9.6% / 0.45 / -68% |
-| IBM | 6,354 | 49.9% | 51.4% | 51.9% | -0.1% / 0.08 / -64% | 5.4% / 0.33 / -58% |
+| S&P 500 (^GSPC) | 6,353 | 51.9% | 53.6% | 53.9% | -0.8% / 0.03 / -68% | 5.1% / 0.35 / -57% |
+| AAPL | 6,354 | 51.5% | 52.2% | 53.4% | 17.4% / 0.75 / -54% | 23.6% / 0.75 / -82% |
+| MSFT | 6,354 | 51.5% | 51.0% | 52.3% | 9.6% / 0.51 / -55% | 9.6% / 0.45 / -68% |
+| IBM | 6,354 | 50.0% | 51.4% | 52.1% | 0.4% / 0.11 / -63% | 5.5% / 0.33 / -58% |
 
 What this shows:
 - **Out of sample, next-day direction is close to a coin flip** for price-only features. Accuracy is below the always-up baseline for 3 of 4 tickers, and the strategy trails buy-and-hold on return.
