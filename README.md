@@ -1,5 +1,7 @@
 # KeynesAI - Stock Market Analysis Platform
 
+**Results page: [keynesai.vercel.app](https://keynesai.vercel.app)**. Interactive equity curves from the walk-forward evaluation, model versus buy and hold, for each ticker.
+
 KeynesAI is a Stock predictor that uses a Machine learning model for predicting stocks with a 65% accuracy, it is sophisticated web-based platform for stock market analysis, predictions, and portfolio management. Built with Flask and powered by machine learning algorithms, it provides users with tools to analyze stocks, make predictions, and track their investment portfolio.
 
 ## Features
