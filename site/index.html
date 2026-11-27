@@ -3,78 +3,38 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>KeynesAI · Testing a stock predictor without fooling yourself</title>
-  <meta name="description" content="A random-forest stock direction model, re-tested walk-forward over 25 years with no look-ahead. The honest result, and where the signal still helps." />
-  <link rel="stylesheet" href="quiet.css" />
-  <link rel="stylesheet" href="app.css" />
+  <title>The KeynesAI Signal · Tomorrow's call for any stock</title>
+  <meta name="description" content="Type any ticker to get KeynesAI's call for the next trading day, retrained on live prices, next to an honest walk-forward record against buy and hold." />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='4' fill='%23fff1e5'/%3E%3Ctext x='16' y='24' font-family='Georgia' font-size='22' font-weight='700' text-anchor='middle' fill='%23990f3d'%3EK%3C/text%3E%3C/svg%3E" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,600;0,6..72,700;1,6..72,400&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="tool.css" />
 </head>
 <body>
-  <nav class="q-nav">
-    <div class="q-wrap">
-      <span class="q-brand">KeynesAI</span>
-      <div class="q-links">
-        <a href="#equity">Equity</a>
-        <a href="#method">Method</a>
-        <a href="https://github.com/mostafaamer1234/KeynesAI">GitHub</a>
-      </div>
+  <header class="mast">
+    <div class="mast-top">
+      <span id="today"></span>
+      <nav><a href="/about">Why it's a coin flip</a><a href="https://github.com/mostafaamer1234/KeynesAI">Source</a></nav>
     </div>
-  </nav>
+    <a class="title" href="/">The KeynesAI Signal</a>
+    <p class="motto">One model, any ticker, and the record to judge it by</p>
+    <form class="search" id="form" autocomplete="off" role="search">
+      <label class="sr" for="ticker">Ticker</label>
+      <input id="ticker" placeholder="Enter a ticker: AAPL, SPY, ^GSPC, BTC-USD" spellcheck="false" autocapitalize="characters" />
+      <button id="go" type="submit">Get the call</button>
+    </form>
+    <div class="tape" id="popular" aria-label="Popular tickers"></div>
+  </header>
 
-  <main>
-    <header class="q-wrap q-hero">
-      <p class="q-eyebrow">Quant ML · Model evaluation</p>
-      <h1 class="q-title">The backtest said 65%. <span class="q-muted">The honest answer is a coin flip.</span></h1>
-      <p class="q-lede">The original models were trained on the whole price history, so the test years leaked into training. Re-tested properly, here is what the signal is worth, and what it is still good for.</p>
-    </header>
-
-    <section class="q-wrap" id="equity">
-      <div class="head">
-        <div class="q-seg" id="tickers" role="group" aria-label="Ticker"></div>
-        <div class="legend"><span><i class="sw strat"></i>Model: long or cash</span><span><i class="sw hold"></i>Buy and hold</span></div>
-      </div>
-      <div class="chart-wrap">
-        <svg id="chart" viewBox="0 0 1000 420" preserveAspectRatio="none" role="img" aria-label="Growth of one dollar, model versus buy and hold"></svg>
-        <div class="tip" id="tip" hidden></div>
-      </div>
-      <p class="q-note axis-note">Growth of $1 from January 2000, log scale, after 5 bp per position change. Weekly points.</p>
-
-      <div class="q-figures stats">
-        <div class="q-figure"><div class="q-num" id="acc"></div><div class="q-label" id="acc-l"></div></div>
-        <div class="q-figure"><div class="q-num" id="cagr"></div><div class="q-label" id="cagr-l"></div></div>
-        <div class="q-figure"><div class="q-num" id="dd"></div><div class="q-label" id="dd-l"></div></div>
-        <div class="q-figure"><div class="q-num" id="mkt"></div><div class="q-label">of trading days spent invested</div></div>
-      </div>
-    </section>
-
-    <section class="q-wrap q-section">
-      <h2 class="q-h2">What it shows.</h2>
-      <div class="q-steps">
-        <div class="q-step"><h3 class="q-h3">Direction is close to random</h3><p>With price-only features, next-day accuracy lands near 50% and below the always-up baseline for most tickers. That is the expected result for liquid large caps.</p></div>
-        <div class="q-step"><h3 class="q-h3">It trails on return</h3><p>Sitting in cash on predicted down days misses too many up days. Buy and hold wins on compound growth.</p></div>
-        <div class="q-step"><h3 class="q-h3">It can cut drawdowns</h3><p>For AAPL and MSFT the worst peak-to-trough loss is much smaller, so the defensible use is risk management, not prediction.</p></div>
-      </div>
-    </section>
-
-    <section class="q-wrap q-section" id="method">
-      <h2 class="q-h2">How to test without fooling yourself.</h2>
-      <div class="q-steps">
-        <div class="q-step"><h3 class="q-h3">Only the past</h3><p>Every feature on day t uses prices up to day t. A test changes future prices and fails if any past feature moves.</p></div>
-        <div class="q-step"><h3 class="q-h3">Retrain forward</h3><p>The random forest is retrained every 250 trading days on strictly earlier data, then predicts the next year it has never seen.</p></div>
-        <div class="q-step"><h3 class="q-h3">Beat a baseline</h3><p>Accuracy is compared with always predicting up, and returns with buy and hold, with trading costs charged.</p></div>
-      </div>
-      <pre class="q-code run">pytest -q evaluation
-python evaluation/walk_forward.py
-python -m evaluation.export_site_data   # regenerates this page's data</pre>
-      <p class="q-note">The repository also contains the original Flask app with portfolio tracking, sector trees and authentication. Not investment advice.</p>
-    </section>
+  <main id="out" aria-live="polite">
+    <p class="wait">Pick a ticker to get tomorrow's call.</p>
   </main>
 
-  <footer class="q-foot">
-    <div class="q-wrap">
-      <span>KeynesAI · Mostafa Amer</span>
-      <a href="https://github.com/mostafaamer1234/KeynesAI/blob/portfolio-upgrade/evaluation/walk_forward.py">Evaluation source</a>
-    </div>
+  <footer class="foot">
+    <p><b>How the call is made.</b> A random forest reads 13 price features (moving-average ratios, share of up days, volatility, momentum, volume) and estimates the chance of a higher close the next trading day. It is retrained on every completed session up to the last close. The track record retrains once a year on strictly earlier data and charges 5 basis points per trade. The live version uses 60 trees and the last three years so it answers in seconds. The study in the repository uses 200 trees from 2000.</p>
+    <p>For learning about model evaluation only. Not investment advice. Prices from Yahoo Finance, which can be delayed.</p>
   </footer>
-  <script src="app.js"></script>
+  <script src="tool.js"></script>
 </body>
 </html>

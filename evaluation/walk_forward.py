@@ -35,8 +35,8 @@ def load_prices(ticker: str) -> pd.DataFrame:
     return df[["Open", "High", "Low", "Close", "Volume"]].sort_index()
 
 
-def make_features(prices: pd.DataFrame) -> pd.DataFrame:
-    """Features for day t use data up to day t; the target is whether day t+1 closes higher."""
+def feature_frame(prices: pd.DataFrame) -> pd.DataFrame:
+    """Features for every day, including the latest one, using data up to that day only."""
     close = prices["Close"]
     ret = close.pct_change()
     feats = pd.DataFrame(index=prices.index)
@@ -46,18 +46,25 @@ def make_features(prices: pd.DataFrame) -> pd.DataFrame:
     feats["vol_20"] = ret.rolling(20).std()
     feats["mom_10"] = close / close.shift(10) - 1
     feats["vol_ratio_20"] = prices["Volume"] / prices["Volume"].rolling(20).mean()
+    return feats
+
+
+def make_features(prices: pd.DataFrame) -> pd.DataFrame:
+    """Features for day t use data up to day t; the target is whether day t+1 closes higher."""
+    close = prices["Close"]
+    feats = feature_frame(prices)
     feats["next_ret"] = close.shift(-1) / close - 1
     feats["target"] = (feats["next_ret"] > 0).astype(int)
     return feats.dropna()
 
 
-def walk_forward(feats: pd.DataFrame, start: str = "2000-01-01", step: int = 250, seed: int = 0) -> pd.DataFrame:
+def walk_forward(feats: pd.DataFrame, start: str = "2000-01-01", step: int = 250, seed: int = 0, n_estimators: int = 200, n_jobs: int = -1) -> pd.DataFrame:
     cols = [c for c in feats.columns if c not in ("next_ret", "target")]
     first = feats.index.searchsorted(pd.Timestamp(start, tz="UTC"))
     out = []
     for i in range(first, len(feats), step):
         train, test = feats.iloc[:i], feats.iloc[i : i + step]
-        model = RandomForestClassifier(n_estimators=200, min_samples_leaf=50, random_state=seed, n_jobs=-1)
+        model = RandomForestClassifier(n_estimators=n_estimators, min_samples_leaf=50, random_state=seed, n_jobs=n_jobs)
         model.fit(train[cols], train["target"])
         out.append(test[["next_ret", "target"]].assign(prob_up=model.predict_proba(test[cols])[:, 1]))
     return pd.concat(out)
@@ -92,6 +99,50 @@ def evaluate(ticker: str, cost_bps: float = 5.0, threshold: float = 0.5) -> dict
         "bh_Sharpe": bh["Sharpe"],
         "strat_MaxDD": s["MaxDD"],
         "bh_MaxDD": bh["MaxDD"],
+    }
+
+
+def forecast(prices: pd.DataFrame, years: int = 5, cost_bps: float = 5.0, threshold: float = 0.5, seed: int = 0, n_estimators: int = 200, n_jobs: int = -1) -> dict:
+    """The model's call for the next trading day, plus its walk-forward record over recent years.
+
+    The call comes from a classifier trained on every labelled day so far, so it uses no future
+    data. The record retrains yearly on strictly earlier data, exactly as in `evaluate`.
+    """
+    feats = make_features(prices)
+    if len(feats) < 2 * 250:
+        raise ValueError("Need at least two years of daily prices after the 250-day warm-up.")
+    cols = [c for c in feats.columns if c not in ("next_ret", "target")]
+    latest = feature_frame(prices).dropna().iloc[[-1]]
+    model = RandomForestClassifier(n_estimators=n_estimators, min_samples_leaf=50, random_state=seed, n_jobs=n_jobs)
+    model.fit(feats[cols], feats["target"])
+    prob_up = float(model.predict_proba(latest[cols])[0, 1])
+
+    start = max(feats.index[-1] - pd.Timedelta(days=365 * years), feats.index[min(len(feats) - 1, 250)])
+    preds = walk_forward(feats, start=str(start.date()), seed=seed, n_estimators=n_estimators, n_jobs=n_jobs)
+    signal = (preds["prob_up"] > threshold).astype(int)
+    switches = signal.diff().abs().fillna(signal.iloc[0])
+    strat_ret = signal * preds["next_ret"] - switches * cost_bps / 1e4
+    strat, hold = (1 + strat_ret).cumprod(), (1 + preds["next_ret"]).cumprod()
+    weekly = strat.resample("W").last().dropna().index
+    s, bh = strategy_stats(strat_ret), strategy_stats(preds["next_ret"])
+    return {
+        "as_of": latest.index[-1].strftime("%Y-%m-%d"),
+        "last_close": float(prices["Close"].iloc[-1]),
+        "prob_up": round(prob_up, 4),
+        "record": {
+            "from": preds.index[0].strftime("%Y-%m-%d"),
+            "days": int(len(preds)),
+            "accuracy": round(float((signal == preds["target"]).mean()), 4),
+            "always_up": round(float(preds["target"].mean()), 4),
+            "in_market": round(float(signal.mean()), 4),
+            "strat_total": round(float(strat.iloc[-1] - 1), 4),
+            "hold_total": round(float(hold.iloc[-1] - 1), 4),
+            "strat_MaxDD": round(float(s["MaxDD"]), 4),
+            "hold_MaxDD": round(float(bh["MaxDD"]), 4),
+            "dates": [d.strftime("%Y-%m-%d") for d in weekly],
+            "strategy": [round(float(strat.asof(d)), 4) for d in weekly],
+            "hold": [round(float(hold.asof(d)), 4) for d in weekly],
+        },
     }
 
 

@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>About · KeynesAI</title>
+  <meta name="description" content="A random-forest stock direction model, re-tested walk-forward over 25 years with no look-ahead. The honest result, and where the signal still helps." />
+  <link rel="stylesheet" href="quiet.css" />
+  <link rel="stylesheet" href="app.css" />
+</head>
+<body>
+  <nav class="q-nav">
+    <div class="q-wrap">
+      <a class="q-brand" href="/">KeynesAI</a>
+      <div class="q-links">
+        <a href="/">Get a live call</a>
+        <a href="#equity">Equity</a>
+        <a href="#method">Method</a>
+        <a href="https://github.com/mostafaamer1234/KeynesAI">GitHub</a>
+      </div>
+    </div>
+  </nav>
+
+  <main>
+    <header class="q-wrap q-hero">
+      <p class="q-eyebrow">Quant ML · Model evaluation</p>
+      <h1 class="q-title">The backtest said 65%. <span class="q-muted">The honest answer is a coin flip.</span></h1>
+      <p class="q-lede">The original models were trained on the whole price history, so the test years leaked into training. Re-tested properly, here is what the signal is worth, and what it is still good for.</p>
+    </header>
+
+    <section class="q-wrap" id="equity">
+      <div class="head">
+        <div class="q-seg" id="tickers" role="group" aria-label="Ticker"></div>
+        <div class="legend"><span><i class="sw strat"></i>Model: long or cash</span><span><i class="sw hold"></i>Buy and hold</span></div>
+      </div>
+      <div class="chart-wrap">
+        <svg id="chart" viewBox="0 0 1000 420" preserveAspectRatio="none" role="img" aria-label="Growth of one dollar, model versus buy and hold"></svg>
+        <div class="tip" id="tip" hidden></div>
+      </div>
+      <p class="q-note axis-note">Growth of $1 from January 2000, log scale, after 5 bp per position change. Weekly points.</p>
+
+      <div class="q-figures stats">
+        <div class="q-figure"><div class="q-num" id="acc"></div><div class="q-label" id="acc-l"></div></div>
+        <div class="q-figure"><div class="q-num" id="cagr"></div><div class="q-label" id="cagr-l"></div></div>
+        <div class="q-figure"><div class="q-num" id="dd"></div><div class="q-label" id="dd-l"></div></div>
+        <div class="q-figure"><div class="q-num" id="mkt"></div><div class="q-label">of trading days spent invested</div></div>
+      </div>
+    </section>
+
+    <section class="q-wrap q-section">
+      <h2 class="q-h2">What it shows.</h2>
+      <div class="q-steps">
+        <div class="q-step"><h3 class="q-h3">Direction is close to random</h3><p>With price-only features, next-day accuracy lands near 50% and below the always-up baseline for most tickers. That is the expected result for liquid large caps.</p></div>
+        <div class="q-step"><h3 class="q-h3">It trails on return</h3><p>Sitting in cash on predicted down days misses too many up days. Buy and hold wins on compound growth.</p></div>
+        <div class="q-step"><h3 class="q-h3">It can cut drawdowns</h3><p>For AAPL and MSFT the worst peak-to-trough loss is much smaller, so the defensible use is risk management, not prediction.</p></div>
+      </div>
+    </section>
+
+    <section class="q-wrap q-section" id="method">
+      <h2 class="q-h2">How to test without fooling yourself.</h2>
+      <div class="q-steps">
+        <div class="q-step"><h3 class="q-h3">Only the past</h3><p>Every feature on day t uses prices up to day t. A test changes future prices and fails if any past feature moves.</p></div>
+        <div class="q-step"><h3 class="q-h3">Retrain forward</h3><p>The random forest is retrained every 250 trading days on strictly earlier data, then predicts the next year it has never seen.</p></div>
+        <div class="q-step"><h3 class="q-h3">Beat a baseline</h3><p>Accuracy is compared with always predicting up, and returns with buy and hold, with trading costs charged.</p></div>
+      </div>
+      <pre class="q-code run">pytest -q evaluation
+python evaluation/walk_forward.py
+python -m evaluation.export_site_data   # regenerates this page's data</pre>
+      <p class="q-note">The repository also contains the original Flask app with portfolio tracking, sector trees and authentication. Not investment advice.</p>
+    </section>
+  </main>
+
+  <footer class="q-foot">
+    <div class="q-wrap">
+      <span>KeynesAI · Mostafa Amer</span>
+      <a href="https://github.com/mostafaamer1234/KeynesAI/blob/portfolio-upgrade/evaluation/walk_forward.py">Evaluation source</a>
+    </div>
+  </footer>
+  <script src="about.js"></script>
+</body>
+</html>

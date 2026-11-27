@@ -28,3 +28,13 @@ def test_strategy_stats_on_constant_growth():
     stats = strategy_stats(daily)
     assert np.isclose(stats["CAGR"], 1.001**252 - 1)
     assert stats["MaxDD"] == 0
+
+
+def test_forecast_reports_a_probability_and_a_record():
+    from evaluation.walk_forward import forecast
+
+    out = forecast(load_prices("IBM").iloc[-1500:], years=2)
+    assert 0 <= out["prob_up"] <= 1
+    rec = out["record"]
+    assert rec["days"] > 300 and len(rec["dates"]) == len(rec["strategy"]) == len(rec["hold"])
+    assert 0 <= rec["accuracy"] <= 1

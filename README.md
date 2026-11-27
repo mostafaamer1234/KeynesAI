@@ -2,7 +2,7 @@
 
 KeynesAI is a Stock predictor that uses a machine learning model to predict next-day stock direction (see the leakage-free evaluation below for real out-of-sample numbers). It is a web-based platform for stock market analysis, predictions, and portfolio management. Built with Flask and powered by machine learning algorithms, it provides users with tools to analyze stocks, make predictions, and track their investment portfolio.
 
-**Results page: [keynesai.vercel.app](https://keynesai.vercel.app)**. Interactive equity curves from the leakage-free walk-forward evaluation, model versus buy and hold, for each ticker. The page lives in `site/` and its data comes from `python -m evaluation.export_site_data`.
+**Try it: [keynesai.vercel.app](https://keynesai.vercel.app)**. Enter any ticker: a serverless function pulls live daily prices, retrains the walk-forward model and returns its call for the next session next to its honest track record against buy and hold (`site/api/forecast.py`, which carries a copy of `evaluation/walk_forward.py`). The original study is at [/about](https://keynesai.vercel.app/about).
 
 ## Features
 

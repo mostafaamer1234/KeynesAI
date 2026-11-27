@@ -1,4 +1,5 @@
-"""Export walk-forward results and weekly equity curves for the static site (site/data.json).
+"""Export walk-forward results and weekly equity curves for the static site (site/data.json),
+and copy evaluation/walk_forward.py next to the live-signal function (site/api/_walk_forward.py).
 
     python -m evaluation.export_site_data
 """
@@ -6,6 +7,7 @@
 from __future__ import annotations
 
 import json
+import shutil
 
 from evaluation.walk_forward import ROOT, evaluate, load_prices, make_features, walk_forward
 
@@ -35,6 +37,8 @@ def main() -> None:
         print(t, stats["accuracy"], stats["always_up"])
     (ROOT / "site").mkdir(exist_ok=True)
     (ROOT / "site" / "data.json").write_text(json.dumps(out))
+    # the live-signal function deploys from site/, so it carries its own copy of the model code
+    shutil.copy(ROOT / "evaluation" / "walk_forward.py", ROOT / "site" / "api" / "_walk_forward.py")
 
 
 if __name__ == "__main__":
