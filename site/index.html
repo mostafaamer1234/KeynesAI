@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>The KeynesAI Signal · Tomorrow's call for any stock</title>
+  <meta name="description" content="Type any ticker to get KeynesAI's call for the next trading day, retrained on live prices, next to an honest walk-forward record against buy and hold." />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='4' fill='%23fff1e5'/%3E%3Ctext x='16' y='24' font-family='Georgia' font-size='22' font-weight='700' text-anchor='middle' fill='%23990f3d'%3EK%3C/text%3E%3C/svg%3E" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,600;0,6..72,700;1,6..72,400&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="tool.css" />
+</head>
+<body>
+  <header class="mast">
+    <div class="mast-top">
+      <span id="today"></span>
+      <nav><a href="/about">Why it's a coin flip</a><a href="https://github.com/mostafaamer1234/KeynesAI">Source</a></nav>
+    </div>
+    <a class="title" href="/">The KeynesAI Signal</a>
+    <p class="motto">One model, any ticker, and the record to judge it by</p>
+    <form class="search" id="form" autocomplete="off" role="search">
+      <label class="sr" for="ticker">Ticker</label>
+      <input id="ticker" placeholder="Enter a ticker: AAPL, SPY, ^GSPC, BTC-USD" spellcheck="false" autocapitalize="characters" />
+      <button id="go" type="submit">Get the call</button>
+    </form>
+    <div class="tape" id="popular" aria-label="Popular tickers"></div>
+  </header>
+
+  <main id="out" aria-live="polite">
+    <p class="wait">Pick a ticker to get tomorrow's call.</p>
+  </main>
+
+  <footer class="foot">
+    <p><b>How the call is made.</b> A random forest reads 13 price features (moving-average ratios, share of up days, volatility, momentum, volume) and estimates the chance of a higher close the next trading day. It is retrained on every completed session up to the last close. The track record retrains once a year on strictly earlier data and charges 5 basis points per trade. The live version uses 60 trees and the last three years so it answers in seconds. The study in the repository uses 200 trees from 2000.</p>
+    <p>For learning about model evaluation only. Not investment advice. Prices from Yahoo Finance, which can be delayed.</p>
+  </footer>
+  <script src="tool.js"></script>
+</body>
+</html>

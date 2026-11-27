@@ -34,3 +34,7 @@ Thumbs.db
 
 # Ignore secrets
 secrets.json 
+__pycache__/
+.venv/
+.pytest_cache/
+.vercel

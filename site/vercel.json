@@ -1,0 +1,5 @@
+{
+  "framework": null,
+  "cleanUrls": true,
+  "functions": { "api/forecast.py": { "maxDuration": 30 } }
+}
